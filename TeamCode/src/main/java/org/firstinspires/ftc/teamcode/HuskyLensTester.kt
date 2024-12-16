@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.modular.GamepadState
 import java.util.concurrent.TimeUnit
 
 /**
- * Sample opmode (and refrence implementation )for testing out HuskeyLens
+ * Sample opmode (and refrence implementation) for testing out HuskeyLens
  * Requires HuskeyLens (duh), and optionally controller for switching algorithms.
  * Button mapping:
  * +=============+============+=======================+
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit
  * +-------------+------------+-----------------------+
  * It pipes the coordinates of all of the box boundaries (or lines) to telemetry once started.
  *
- * Once we figure out what we'll use the HuskeyLens for, I'll write a class to easily use it
  */
 
 @TeleOp(name = "HuskyLens Tester")
@@ -37,7 +36,7 @@ class HuskyLensTester : BaseLinearOpMode() {
     private lateinit var huskyLens: HuskyLens
 
     // So having a ratelimit is apparently important, "to make it easier to read"
-    private var readPeriod: Long = 1
+    private val readPeriod: Long = 1
     private var rateLimit: Deadline = Deadline(readPeriod, TimeUnit.SECONDS)
 
     // Updates active camera algorithm when called
