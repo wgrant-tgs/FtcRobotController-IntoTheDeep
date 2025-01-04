@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import org.firstinspires.ftc.teamcode.modular.ToggleableState
+import java.util.Locale
 import kotlin.math.abs
 
 @TeleOp(name = "DriveTrain")
@@ -32,6 +35,16 @@ class DriveTrain : BaseLinearOpMode() {
 
         while (this.opModeIsActive()) {
             this.gp1.cycle()
+            this.odometry.update()
+            val pos = this.odometry.position;
+            val data = String.format(
+                Locale.US,
+                "x: %.3f, y: %.3f, h: %.3f",
+                pos.getX(DistanceUnit.MM),
+                pos.getY(DistanceUnit.MM),
+                pos.getHeading(AngleUnit.DEGREES)
+            );
+            telemetry.addData("pos", data);
 
             toggleButtonMap.forEach { it.key.ifIsToggled(it.value) }
 
@@ -41,10 +54,10 @@ class DriveTrain : BaseLinearOpMode() {
             val turnPower = -this.gp1.current.right_trigger + this.gp1.current.left_trigger
 
             val motorPower = arrayOf(
-                this.gp1.current.left_stick_x - this.gp1.current.left_stick_y - turnPower,
-                -this.gp1.current.left_stick_x - this.gp1.current.left_stick_y + turnPower,
-                -this.gp1.current.left_stick_x - this.gp1.current.left_stick_y - turnPower,
-                this.gp1.current.left_stick_x - this.gp1.current.left_stick_y + turnPower,
+                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower,
+                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
+                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
+                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower,
             )
 
             // Magnitude of the maximum value, not velocity
