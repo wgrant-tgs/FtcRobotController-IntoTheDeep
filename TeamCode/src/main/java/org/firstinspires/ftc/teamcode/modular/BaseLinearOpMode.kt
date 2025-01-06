@@ -15,6 +15,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
     protected lateinit var leftFrontMotor: DcMotor
     protected lateinit var intakeMotor: DcMotor
     protected lateinit var armMotor: DcMotor
+    protected lateinit var leftIntakeSpinner: DcMotor
+    protected lateinit var rightIntakeSpinner: DcMotor
     protected lateinit var armServo: Servo
     protected lateinit var ratchet: Ratchet
     protected lateinit var armLimitSwitch: TouchSensor
@@ -28,6 +30,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
             this.rightFrontMotor = this.hardwareMap.dcMotor["rightFront"]
             this.leftFrontMotor = this.hardwareMap.dcMotor["leftFront"]
             this.intakeMotor = this.hardwareMap.dcMotor["intake"]
+            this.leftIntakeSpinner = this.hardwareMap.dcMotor["leftIntakeSpinner"]
+            this.rightIntakeSpinner = this.hardwareMap.dcMotor["rightIntakeSpinner"]
             this.armMotor = this.hardwareMap.dcMotor["arm"]
             this.armServo = this.hardwareMap.servo["armServo"]
             this.ratchet = Ratchet(this.hardwareMap.servo["ratchet"])
@@ -37,9 +41,12 @@ abstract class BaseLinearOpMode : LinearOpMode() {
             this.rightFrontMotor.direction = DcMotorSimple.Direction.FORWARD
             this.leftBackMotor.direction = DcMotorSimple.Direction.REVERSE
             this.rightBackMotor.direction = DcMotorSimple.Direction.FORWARD
+            this.armMotor.direction = DcMotorSimple.Direction.REVERSE
+            this.armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
             this.intakeMotor.direction = DcMotorSimple.Direction.FORWARD // This is a guess, check later
 
             this.allMotors = arrayOf(leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor, intakeMotor, armMotor)
+            this.allMotors.forEach {it.mode = DcMotor.RunMode.RUN_USING_ENCODER}
 
             this.odometry = this.hardwareMap.get(GoBildaPinpointDriver::class.java, "odometry")
             this.odometry.setOffsets(95.0, 0.0)

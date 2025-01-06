@@ -14,11 +14,11 @@ class Ratchet(private val servo: Servo) {
         engaged = true
     }
 
-    fun disengage() {
+   fun disengage() {
         servo.position = 0.0
         sleep(300)
         engaged = false
-    }
+   }
 
     val isEngaged: Boolean
         get() = engaged
