@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -15,6 +16,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
     protected lateinit var intakeMotor: DcMotor
     protected lateinit var armMotor: DcMotor
     protected lateinit var armServo: Servo
+    protected lateinit var ratchet: Ratchet
+    protected lateinit var armLimitSwitch: TouchSensor
     protected lateinit var odometry: GoBildaPinpointDriver
     protected lateinit var allMotors: Array<DcMotor>
 
@@ -27,6 +30,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
             this.intakeMotor = this.hardwareMap.dcMotor["intake"]
             this.armMotor = this.hardwareMap.dcMotor["arm"]
             this.armServo = this.hardwareMap.servo["armServo"]
+            this.ratchet = Ratchet(this.hardwareMap.servo["ratchet"])
+            this.armLimitSwitch = this.hardwareMap.touchSensor["armLimitSwitch"]
 
             this.leftFrontMotor.direction = DcMotorSimple.Direction.REVERSE
             this.rightFrontMotor.direction = DcMotorSimple.Direction.FORWARD
