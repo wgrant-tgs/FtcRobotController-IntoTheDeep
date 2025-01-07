@@ -36,12 +36,23 @@ class DriveTrain : BaseLinearOpMode() {
             GamepadButton(gp1, Gamepad::right_bumper) to power::right,
             GamepadButton(gp2, Gamepad::dpad_right) to {
                 if (!this.ratchet.isEngaged) {
-                    this.armServo.position = servoPos.value; servoPos.right()
+                    this.armServo.position = servoPos.value
+                    servoPos.right()
                 }
             },
-            GamepadButton(gp1, Gamepad::a) to { if (armLimitSwitch.isPressed) {ratchet.engage(); armServo.position = 0.225} },
+            GamepadButton(gp1, Gamepad::a) to {
+                if (armLimitSwitch.isPressed) {
+                    ratchet.engage()
+                    armServo.position = 0.225
+                }
+            },
             GamepadButton(gp1, Gamepad::b) to ratchet::disengage,
-            GamepadButton(gp2, Gamepad::a) to { if (armLimitSwitch.isPressed) {ratchet.engage(); armServo.position = 0.225} },
+            GamepadButton(gp2, Gamepad::a) to {
+                if (armLimitSwitch.isPressed) {
+                    ratchet.engage()
+                    armServo.position = 0.225
+                }
+            },
             GamepadButton(gp2, Gamepad::b) to ratchet::disengage,
         )
 
@@ -57,6 +68,7 @@ class DriveTrain : BaseLinearOpMode() {
             // Make arm not clip through robot (allegedly)
             if (armLimitSwitch.isPressed) {
                 armMotor.power = 0.0
+                ratchet.engage()
             }
 
             val pos = this.odometry.position
@@ -95,12 +107,16 @@ class DriveTrain : BaseLinearOpMode() {
 
             // Spin helper motors for intake
             when {
-               motorPower[4] in -10E-5..10E-5 -> {leftIntakeSpinner.power = 0.0; rightIntakeSpinner.power = 0.0 }
-               motorPower[4] > 0f -> {leftIntakeSpinner.power = -1.0; rightIntakeSpinner.power = 1.0} // Take in samples
-               motorPower[4] < 0f -> {leftIntakeSpinner.power = 1.0; rightIntakeSpinner.power = 1.0} // Eject samples
+                motorPower[4] in -10E-5..10E-5 -> {
+                    leftIntakeSpinner.power = 0.0; rightIntakeSpinner.power = 0.0
+                }
+                motorPower[4] > 0f -> {
+                    leftIntakeSpinner.power = -1.0; rightIntakeSpinner.power = 1.0
+                } // Take in samples
+                motorPower[4] < 0f -> {
+                    leftIntakeSpinner.power = 1.0; rightIntakeSpinner.power = 1.0
+                } // Eject samples
             }
-
-
 
             // Magnitude of the maximum value, not velocity
             val max = abs(motorPower.maxBy { abs(it) })
