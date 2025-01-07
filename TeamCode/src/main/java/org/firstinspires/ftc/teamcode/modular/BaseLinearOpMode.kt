@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.modular
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
@@ -15,8 +16,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
     protected lateinit var leftFrontMotor: DcMotor
     protected lateinit var intakeMotor: DcMotor
     protected lateinit var armMotor: DcMotor
-    protected lateinit var leftIntakeSpinner: DcMotor
-    protected lateinit var rightIntakeSpinner: DcMotor
+    protected lateinit var leftIntakeSpinner: CRServo
+    protected lateinit var rightIntakeSpinner: CRServo
     protected lateinit var armServo: Servo
     protected lateinit var ratchet: Ratchet
     protected lateinit var armLimitSwitch: TouchSensor
@@ -30,8 +31,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
             this.rightFrontMotor = this.hardwareMap.dcMotor["rightFront"]
             this.leftFrontMotor = this.hardwareMap.dcMotor["leftFront"]
             this.intakeMotor = this.hardwareMap.dcMotor["intake"]
-            this.leftIntakeSpinner = this.hardwareMap.dcMotor["leftIntakeSpinner"]
-            this.rightIntakeSpinner = this.hardwareMap.dcMotor["rightIntakeSpinner"]
+            this.leftIntakeSpinner = this.hardwareMap.crservo["leftIntakeSpinner"]
+            this.rightIntakeSpinner = this.hardwareMap.crservo["rightIntakeSpinner"]
             this.armMotor = this.hardwareMap.dcMotor["arm"]
             this.armServo = this.hardwareMap.servo["armServo"]
             this.ratchet = Ratchet(this.hardwareMap.servo["ratchet"])
