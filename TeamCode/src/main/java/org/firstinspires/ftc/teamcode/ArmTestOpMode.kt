@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
+import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 
 @Suppress("unused")
 @TeleOp(name = "Arm Test")

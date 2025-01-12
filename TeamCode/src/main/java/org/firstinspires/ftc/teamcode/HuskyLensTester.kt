@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import java.util.concurrent.TimeUnit
+import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 
 /**
  * Sample opmode (and reference implementation) for testing out HuskeyLens
