@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.internal.system.Deadline
-import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import java.util.concurrent.TimeUnit
