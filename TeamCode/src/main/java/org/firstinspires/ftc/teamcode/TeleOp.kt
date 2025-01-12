@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -10,7 +9,6 @@ import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import org.firstinspires.ftc.teamcode.modular.ToggleableState
-import org.firstinspires.ftc.teamcode.modular.toggleDirection
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
@@ -32,14 +30,14 @@ class TeleOp : BaseLinearOpMode() {
         gp1 = GamepadState(gamepad1)
         gp2 = GamepadState(this.gamepad2)
 
+        var manualRatchetEngagement = false
+
         val toggleButtonMap = mapOf(
             GamepadButton(gp1, Gamepad::left_bumper) to power::left,
             GamepadButton(gp1, Gamepad::right_bumper) to power::right,
             GamepadButton(gp2, Gamepad::dpad_right) to { bucket.position = 0.0 },
-            GamepadButton(gp1, Gamepad::a) to { ratchet.engage() },
-            GamepadButton(gp1, Gamepad::b) to { ratchet.disengage() },
-            GamepadButton(gp2, Gamepad::a) to { ratchet.engage() },
-            GamepadButton(gp2, Gamepad::b) to { ratchet.disengage() },
+            GamepadButton(gp2, Gamepad::dpad_down) to { ratchet.engage(); manualRatchetEngagement = true; arm.power = 0.0 },
+            GamepadButton(gp2, Gamepad::dpad_up) to { ratchet.disengage(); manualRatchetEngagement = false; arm.power = 0.0 },
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
@@ -105,12 +103,15 @@ class TeleOp : BaseLinearOpMode() {
             }
 
             // going up while arm is at bottom
-            if (ratchet.engaged && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+            if (!manualRatchetEngagement && ratchet.engaged && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
                 ratchet.disengage()
                 Thread.sleep(500)
             }
 
             when {
+                // block if ratchet is engaged
+                ratchet.engaged -> {}
+
                 // arm going up
                 -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
                     arm.power = -gp2.current.right_stick_y * 3.0 / 4
@@ -118,7 +119,7 @@ class TeleOp : BaseLinearOpMode() {
 
                 // arm going down
                 -gp2.current.right_stick_y < 0 && !currSwitch -> {
-                    bucket.position = 0.5
+                    bucket.position = 0.4
                     arm.power = -gp2.current.right_stick_y * 3.0 / 4
                 }
 
