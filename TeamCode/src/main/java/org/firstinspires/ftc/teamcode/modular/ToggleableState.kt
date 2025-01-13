@@ -10,7 +10,8 @@ class ToggleableState<T>(
     fun left() {
         // negative mod is weird with jvm languages,
         // avoid the problem by making the number always positive
-        idx = if (cycle) (idx - 1 + values.size) % values.size else (idx - 1).coerceIn(values.indices)
+        idx =
+            if (cycle) (idx - 1 + values.size) % values.size else (idx - 1).coerceIn(values.indices)
     }
 
     fun right() {

@@ -74,7 +74,10 @@ class HuskyLensTester : BaseLinearOpMode() {
 
         gp1 = GamepadState(gamepad1)
 
-        LensMode(huskyLens, telemetry).colorRecognition() // Sets the default mode. Most likely we'll use color recognition to detect game objects.
+        LensMode(
+            huskyLens,
+            telemetry
+        ).colorRecognition() // Sets the default mode. Most likely we'll use color recognition to detect game objects.
 
         // Proof of life check
         if (huskyLens.knock()) {

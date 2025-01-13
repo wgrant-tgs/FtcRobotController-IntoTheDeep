@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
@@ -137,39 +135,6 @@ class TeleOp : BaseLinearOpMode() {
 
 
             telemetry.update()
-        }
-    }
-
-    class Spinner(val left: CRServo, val right: CRServo) {
-        fun on(inwards: Boolean) = set(if (inwards) 1.0 else -1.0)
-        fun off() = set(0.0)
-        fun get() = left.power == 0.0
-        fun set(num: Double) {
-            left.power = num
-            right.power = num
-        }
-    }
-
-    // active ~ closed
-    class ServoWrapper(val servo: Servo, val active: Double, val inactive: Double) {
-        var toggled = false
-
-        fun toggle(): Boolean {
-            toggled = !toggled
-            servo.position = if (toggled) active else inactive
-            return toggled
-        }
-
-        fun engaged() = toggled
-
-        fun activate() {
-            toggled = true
-            servo.position = active
-        }
-
-        fun inactivate() {
-            toggled = false
-            servo.position = inactive
         }
     }
 }
