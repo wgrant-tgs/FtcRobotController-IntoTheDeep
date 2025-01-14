@@ -22,7 +22,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
     protected lateinit var switch: TouchSensor
     protected lateinit var elevator: DcMotorEx
     protected lateinit var arm: DcMotorEx
-    protected lateinit var ratchet: ServoWrapper
+    protected lateinit var ratchet: Ratchet
 
     protected fun initDriveTrain() {
         // TODO: find a way to print this exception while blocking starting the program
@@ -64,7 +64,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
             elevator = this.hardwareMap["elevator"] as DcMotorEx
             elevator.direction = DcMotorSimple.Direction.REVERSE
             elevator.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-            ratchet = ServoWrapper(this.hardwareMap["ratchet"] as Servo, 0.1, 0.0)
+            ratchet = Ratchet(this.hardwareMap["ratchet"] as Servo, 0.1, 0.0)
             ratchet.disengage()
             val leftSpinner = this.hardwareMap["left_spinner"] as CRServo
             leftSpinner.direction = DcMotorSimple.Direction.REVERSE
