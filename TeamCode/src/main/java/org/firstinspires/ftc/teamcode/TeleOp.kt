@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import org.firstinspires.ftc.teamcode.modular.ToggleableState
+import org.firstinspires.ftc.teamcode.modular.toggleDirection
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
@@ -32,6 +33,7 @@ class TeleOp : BaseLinearOpMode() {
             GamepadButton(gp1, Gamepad::left_bumper) to power::left,
             GamepadButton(gp1, Gamepad::right_bumper) to power::right,
             GamepadButton(gp2, Gamepad::dpad_right) to { bucket.position = 0.0 },
+
             GamepadButton(gp2, Gamepad::dpad_down) to {
                 arm.power = 0.0
                 ratchet.engage()
@@ -40,7 +42,18 @@ class TeleOp : BaseLinearOpMode() {
             GamepadButton(gp2, Gamepad::dpad_up) to {
                 ratchet.disengage()
                 ratchet.disableManual()
-            }
+            },
+
+            GamepadButton(gp2, Gamepad::dpad_down) to { ratchet.engage()
+                                                        ratchet.enableManual()
+                                                        arm.power = 0.0 },
+
+            GamepadButton(gp2, Gamepad::dpad_up) to { ratchet.disengage()
+                                                      ratchet.disableManual()
+                                                      arm.power = 0.0 },
+
+            GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
+
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
@@ -56,6 +69,7 @@ class TeleOp : BaseLinearOpMode() {
         }
 
         var lastSwitch = switch.isPressed
+        ratchet.disengage()
 
         while (this.opModeIsActive()) {
             this.gp1.cycle()
@@ -114,16 +128,25 @@ class TeleOp : BaseLinearOpMode() {
                 Thread.sleep(500)
             }
 
-            // arm going up
-            if (ratchet.engaged()) {
-                arm.power = 0.0
-            } else if (-gp2.current.right_stick_y > 0 && arm.currentPosition < 7000) {
-                arm.power = -gp2.current.right_stick_y * 0.75
-                // going down
-            } else if (-gp2.current.right_stick_y < 0 && !currSwitch) {
-                bucket.position = 0.5
-                arm.power = -gp2.current.right_stick_y * 0.75
-            } else arm.power = 0.0
+            if (ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                ratchet.disengage()
+            }
+
+            when {
+                // block if ratchet is engaged
+                ratchet.engaged() -> { arm.power = 0.0 }
+
+                // arm going up
+                -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
+                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                }
+
+                // arm going down
+                -gp2.current.right_stick_y < 0 && !currSwitch -> {
+                    bucket.position = 0.4
+                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                }
+            }
 
             // elevator and spinner
             elevator.power = gp2.current.left_stick_y.toDouble()
