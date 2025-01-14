@@ -30,10 +30,10 @@ abstract class BaseLinearOpMode : LinearOpMode() {
         this.rightFront = this.hardwareMap["right_front"] as DcMotorEx
         this.leftFront = this.hardwareMap["left_front"] as DcMotorEx
 
-        this.leftFront.direction = DcMotorSimple.Direction.FORWARD
-        this.rightFront.direction = DcMotorSimple.Direction.REVERSE
-        this.leftBack.direction = DcMotorSimple.Direction.FORWARD
-        this.rightBack.direction = DcMotorSimple.Direction.REVERSE
+        this.leftFront.direction = DcMotorSimple.Direction.REVERSE
+        this.rightFront.direction = DcMotorSimple.Direction.FORWARD
+        this.leftBack.direction = DcMotorSimple.Direction.REVERSE
+        this.rightBack.direction = DcMotorSimple.Direction.FORWARD
 
         this.allMotors = arrayOf(leftFront, rightFront, leftBack, rightBack)
 

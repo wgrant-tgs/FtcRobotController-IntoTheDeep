@@ -39,13 +39,13 @@ class TeleOp : BaseLinearOpMode() {
                 ratchet.engage()
                 ratchet.enableManual()
             },
+
             GamepadButton(gp2, Gamepad::dpad_up) to {
                 ratchet.disengage()
                 ratchet.disableManual()
             },
 
             GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
-
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
@@ -84,10 +84,10 @@ class TeleOp : BaseLinearOpMode() {
             val turnPower = this.gp1.current.right_trigger - this.gp1.current.left_trigger
 
             val motorPower = arrayOf(
-                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower,
-                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower,
-                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
-                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
+                -this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower,
+                -this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower,
+                -this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
+                -this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
             )
 
             // Magnitude of the maximum value, not velocity
