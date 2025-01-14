@@ -14,16 +14,14 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
 
-@TeleOp(name = "DriveTrain")
+@TeleOp(name = "TeleOp 2025")
 @Suppress("unused")
 // @Disabled
 class TeleOp : BaseLinearOpMode() {
-
     // kotlin does not do numeric type promotion, if the 3rd arg is just "1" than T cannot be inferred
-    private var power = ToggleableState(2, 0.33, 0.67, 1.0)
+    private var power = ToggleableState(2, false, 0.33, 0.67, 1.0)
     private lateinit var gp1: GamepadState
     private lateinit var gp2: GamepadState
-
 
     override fun runOpMode() {
         telemetry.msTransmissionInterval = 100
@@ -31,38 +29,51 @@ class TeleOp : BaseLinearOpMode() {
         gp1 = GamepadState(gamepad1)
         gp2 = GamepadState(this.gamepad2)
 
-        var manualRatchetEngagement = false
-
         val toggleButtonMap = mapOf(
             GamepadButton(gp1, Gamepad::left_bumper) to power::left,
             GamepadButton(gp1, Gamepad::right_bumper) to power::right,
             GamepadButton(gp2, Gamepad::dpad_right) to { bucket.position = 0.0 },
 
+            GamepadButton(gp2, Gamepad::dpad_down) to {
+                arm.power = 0.0
+                ratchet.engage()
+                ratchet.enableManual()
+            },
+            GamepadButton(gp2, Gamepad::dpad_up) to {
+                ratchet.disengage()
+                ratchet.disableManual()
+            },
+
             GamepadButton(gp2, Gamepad::dpad_down) to { ratchet.engage()
-                                                        manualRatchetEngagement = true
+                                                        ratchet.enableManual()
                                                         arm.power = 0.0 },
 
             GamepadButton(gp2, Gamepad::dpad_up) to { ratchet.disengage()
-                                                      manualRatchetEngagement = false
+                                                      ratchet.disableManual()
                                                       arm.power = 0.0 },
 
             GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
+
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
-        this.initDriveTrain()
-        this.initArm()
-
-        this.waitForStart()
+        try {
+            this.initHardware()
+            this.telemetry.addLine("initialization successful")
+        } catch (e: Exception) {
+            this.telemetry.addLine("initialization failed")
+            this.telemetry.addData("exception", e)
+            this.requestOpModeStop()
+        } finally {
+            this.waitForStart()
+        }
 
         var lastSwitch = switch.isPressed
         ratchet.disengage()
 
         while (this.opModeIsActive()) {
-
             this.gp1.cycle()
             this.gp2.cycle()
-
             this.odometry.update()
             val pos = this.odometry.position
             val data = String.format(
@@ -72,22 +83,20 @@ class TeleOp : BaseLinearOpMode() {
                 pos.getY(DistanceUnit.MM),
                 pos.getHeading(AngleUnit.DEGREES)
             )
-
-            telemetry.addData("Odometry Position", data)
+            telemetry.addData("pos", data)
 
             toggleButtonMap.forEach { it.key.ifIsToggled(it.value) }
 
             /* Calculates motor power in accordance with the allMotors array
                and formulas found here: https://github.com/brandon-gong/ftc-mecanum
              */
-
-            val turnPower = (this.gp1.current.right_trigger - this.gp1.current.left_trigger)
+            val turnPower = -this.gp1.current.right_trigger + this.gp1.current.left_trigger
 
             val motorPower = arrayOf(
-                (this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower),
-                (this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower),
-                (this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower),
-                (this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower),
+                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower,
+                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
+                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
+                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower,
             )
 
             // Magnitude of the maximum value, not velocity
@@ -101,24 +110,31 @@ class TeleOp : BaseLinearOpMode() {
                 m.power = motorPower[i].toDouble() * power.value
             }
 
+
             val currSwitch = switch.isPressed
 
             // arm reaches bottom
             if (currSwitch && !lastSwitch) {
                 arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                ratchet.engage()
+                if (!ratchet.manual()) ratchet.engage()
+                Thread.sleep(500)
                 bucket.position = 0.225
             }
 
             // going up while arm is at bottom
-            if (!manualRatchetEngagement && ratchet.engaged && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+            if (ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                if (!ratchet.manual()) ratchet.disengage()
+                Thread.sleep(500)
+            }
+
+            if (ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
                 ratchet.disengage()
             }
 
             when {
                 // block if ratchet is engaged
-                ratchet.engaged -> { arm.power = 0.0 }
+                ratchet.engaged() -> { arm.power = 0.0 }
 
                 // arm going up
                 -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
@@ -138,7 +154,8 @@ class TeleOp : BaseLinearOpMode() {
 
             lastSwitch = currSwitch
 
-            this.telemetry.addData("Arm Position", arm.currentPosition)
+            this.telemetry.addData("arm pos", arm.currentPosition)
+
 
             telemetry.update()
         }

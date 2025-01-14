@@ -2,28 +2,29 @@ package org.firstinspires.ftc.teamcode.modular
 
 import com.qualcomm.robotcore.hardware.Servo
 
-// active ~ closed
-class Ratchet(val servo: Servo, val active: Double, val inactive: Double) {
-    private var toggled = false;
-
-    fun toggle() {
-        toggled = !toggled
-        servo.position = if (toggled) active else inactive
-        Thread.sleep(500)
-    }
-
-    val engaged
-        get() = toggled
+class Ratchet(private val servo: Servo, private val active: Double, private val inactive: Double) {
+    private var engaged = false
+    fun engaged() = engaged
+    private var manual = false
+    fun manual() = manual
 
     fun engage() {
-        toggled = true
+        engaged = true
         servo.position = active
         Thread.sleep(500)
     }
 
     fun disengage() {
-        toggled = false;
+        engaged = false
         servo.position = inactive
         Thread.sleep(500)
+    }
+
+    fun enableManual() {
+        manual = true
+    }
+
+    fun disableManual() {
+        manual = false
     }
 }
