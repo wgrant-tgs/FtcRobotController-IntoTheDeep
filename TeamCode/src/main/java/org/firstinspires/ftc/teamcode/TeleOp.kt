@@ -44,14 +44,6 @@ class TeleOp : BaseLinearOpMode() {
                 ratchet.disableManual()
             },
 
-            GamepadButton(gp2, Gamepad::dpad_down) to { ratchet.engage()
-                                                        ratchet.enableManual()
-                                                        arm.power = 0.0 },
-
-            GamepadButton(gp2, Gamepad::dpad_up) to { ratchet.disengage()
-                                                      ratchet.disableManual()
-                                                      arm.power = 0.0 },
-
             GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
 
         )
@@ -69,7 +61,6 @@ class TeleOp : BaseLinearOpMode() {
         }
 
         var lastSwitch = switch.isPressed
-        ratchet.disengage()
 
         while (this.opModeIsActive()) {
             this.gp1.cycle()
@@ -90,13 +81,13 @@ class TeleOp : BaseLinearOpMode() {
             /* Calculates motor power in accordance with the allMotors array
                and formulas found here: https://github.com/brandon-gong/ftc-mecanum
              */
-            val turnPower = -this.gp1.current.right_trigger + this.gp1.current.left_trigger
+            val turnPower = this.gp1.current.right_trigger - this.gp1.current.left_trigger
 
             val motorPower = arrayOf(
                 this.gp1.current.left_stick_y - this.gp1.current.left_stick_x - turnPower,
-                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
-                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
                 this.gp1.current.left_stick_y + this.gp1.current.left_stick_x + turnPower,
+                this.gp1.current.left_stick_y + this.gp1.current.left_stick_x - turnPower,
+                this.gp1.current.left_stick_y - this.gp1.current.left_stick_x + turnPower,
             )
 
             // Magnitude of the maximum value, not velocity
@@ -128,7 +119,7 @@ class TeleOp : BaseLinearOpMode() {
                 Thread.sleep(500)
             }
 
-            if (ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+            if (!ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
                 ratchet.disengage()
             }
 
@@ -146,6 +137,8 @@ class TeleOp : BaseLinearOpMode() {
                     bucket.position = 0.4
                     arm.power = -gp2.current.right_stick_y * 3.0 / 4
                 }
+
+                else -> { arm.power = 0.0 }
             }
 
             // elevator and spinner
