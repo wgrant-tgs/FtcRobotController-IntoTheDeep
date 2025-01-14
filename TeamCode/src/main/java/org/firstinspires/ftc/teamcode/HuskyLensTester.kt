@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.internal.system.Deadline
-import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import java.util.concurrent.TimeUnit
+import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 
 /**
  * Sample opmode (and reference implementation) for testing out HuskeyLens
@@ -74,7 +74,10 @@ class HuskyLensTester : BaseLinearOpMode() {
 
         gp1 = GamepadState(gamepad1)
 
-        LensMode(huskyLens, telemetry).colorRecognition() // Sets the default mode. Most likely we'll use color recognition to detect game objects.
+        LensMode(
+            huskyLens,
+            telemetry
+        ).colorRecognition() // Sets the default mode. Most likely we'll use color recognition to detect game objects.
 
         // Proof of life check
         if (huskyLens.knock()) {
@@ -136,4 +139,3 @@ class HuskyLensTester : BaseLinearOpMode() {
         }
     }
 }
-
