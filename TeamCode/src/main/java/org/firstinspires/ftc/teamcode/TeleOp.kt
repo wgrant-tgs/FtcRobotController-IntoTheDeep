@@ -9,10 +9,12 @@ import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import org.firstinspires.ftc.teamcode.modular.ToggleableState
+import org.firstinspires.ftc.teamcode.modular.right_trigger_bool
 import org.firstinspires.ftc.teamcode.modular.toggleDirection
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
+import kotlin.reflect.KCallable
 
 @TeleOp(name = "TeleOp 2025")
 @Suppress("unused")
@@ -36,16 +38,24 @@ class TeleOp : BaseLinearOpMode() {
 
             GamepadButton(gp2, Gamepad::dpad_down) to {
                 arm.power = 0.0
-                ratchet.engage()
-                ratchet.enableManual()
+                servoWrapper.engage()
+                servoWrapper.enableManual()
             },
 
             GamepadButton(gp2, Gamepad::dpad_up) to {
-                ratchet.disengage()
-                ratchet.disableManual()
+                servoWrapper.disengage()
+                servoWrapper.disableManual()
             },
 
-            GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
+            GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}},
+
+            GamepadButton(gp2, Gamepad::dpad_left) to {
+                hooks.toggle()
+            },
+
+            GamepadButton(gp2, Gamepad::right_trigger_bool) to {
+                hooks.disablePwm()
+            }
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
@@ -108,34 +118,34 @@ class TeleOp : BaseLinearOpMode() {
             if (currSwitch && !lastSwitch) {
                 arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                if (!ratchet.manual()) ratchet.engage()
+                if (!servoWrapper.manual()) servoWrapper.engage()
                 Thread.sleep(500)
                 bucket.position = 0.225
             }
 
             // going up while arm is at bottom
-            if (ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
-                if (!ratchet.manual()) ratchet.disengage()
+            if (servoWrapper.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                if (!servoWrapper.manual()) servoWrapper.disengage()
                 Thread.sleep(500)
             }
 
-            if (!ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
-                ratchet.disengage()
+            if (!servoWrapper.manual() && servoWrapper.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                servoWrapper.disengage()
             }
 
             when {
                 // block if ratchet is engaged
-                ratchet.engaged() -> { arm.power = 0.0 }
+                servoWrapper.engaged() -> { arm.power = 0.0 }
 
                 // arm going up
                 -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
-                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                    arm.power = -gp2.current.right_stick_y * 1.0
                 }
 
                 // arm going down
                 -gp2.current.right_stick_y < 0 && !currSwitch -> {
                     bucket.position = 0.4
-                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                    arm.power = -gp2.current.right_stick_y * 1.0
                 }
 
                 else -> { arm.power = 0.0 }
@@ -148,6 +158,7 @@ class TeleOp : BaseLinearOpMode() {
             lastSwitch = currSwitch
 
             this.telemetry.addData("arm pos", arm.currentPosition)
+            this.telemetry.addData("hooks pos", hooks.position)
 
 
             telemetry.update()
