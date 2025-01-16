@@ -22,7 +22,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
     protected lateinit var switch: TouchSensor
     protected lateinit var elevator: DcMotorEx
     protected lateinit var arm: DcMotorEx
-    protected lateinit var servoWrapper: ServoWrapper
+    protected lateinit var ratchet: ServoWrapper
     protected lateinit var hooks: ServoWrapper
 
     protected fun initHardware() {
@@ -56,8 +56,8 @@ abstract class BaseLinearOpMode : LinearOpMode() {
         elevator.direction = DcMotorSimple.Direction.REVERSE
         elevator.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
-        servoWrapper = ServoWrapper(this.hardwareMap.servo["ratchet"], 0.1, 0.0)
-        servoWrapper.disengage()
+        ratchet = ServoWrapper(this.hardwareMap.servo["ratchet"], 0.1, 0.0)
+        ratchet.disengage()
 
         hooks = ServoWrapper(this.hardwareMap.servo["hooks"], 0.6, 0.2)
         hooks.disengage()

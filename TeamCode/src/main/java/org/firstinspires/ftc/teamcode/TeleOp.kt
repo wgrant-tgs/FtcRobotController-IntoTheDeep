@@ -36,13 +36,13 @@ class TeleOp : BaseLinearOpMode() {
 
             GamepadButton(gp2, Gamepad::dpad_down) to {
                 arm.power = 0.0
-                servoWrapper.engage()
-                servoWrapper.enableManual()
+                ratchet.engage()
+                ratchet.enableManual()
             },
 
             GamepadButton(gp2, Gamepad::dpad_up) to {
-                servoWrapper.disengage()
-                servoWrapper.disableManual()
+                ratchet.disengage()
+                ratchet.disableManual()
             },
 
             GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}},
@@ -116,24 +116,24 @@ class TeleOp : BaseLinearOpMode() {
             if (currSwitch && !lastSwitch) {
                 arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                if (!servoWrapper.manual()) servoWrapper.engage()
+                if (!ratchet.manual()) ratchet.engage()
                 Thread.sleep(500)
                 bucket.position = 0.225
             }
 
             // going up while arm is at bottom
-            if (servoWrapper.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
-                if (!servoWrapper.manual()) servoWrapper.disengage()
+            if (ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                if (!ratchet.manual()) ratchet.disengage()
                 Thread.sleep(500)
             }
 
-            if (!servoWrapper.manual() && servoWrapper.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
-                servoWrapper.disengage()
+            if (!ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+                ratchet.disengage()
             }
 
             when {
                 // block if ratchet is engaged
-                servoWrapper.engaged() -> { arm.power = 0.0 }
+                ratchet.engaged() -> { arm.power = 0.0 }
 
                 // arm going up
                 -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
