@@ -45,7 +45,15 @@ class TeleOp : BaseLinearOpMode() {
                 ratchet.disableManual()
             },
 
-            GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}}
+            GamepadButton(gp1, Gamepad::x) to {allMotors.forEach {it.toggleDirection()}},
+
+            GamepadButton(gp2, Gamepad::dpad_left) to {
+                hooks.toggle()
+            },
+
+            GamepadButton(gp2, Gamepad::right_bumper) to {
+                hooks.disablePwm()
+            }
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
@@ -129,13 +137,13 @@ class TeleOp : BaseLinearOpMode() {
 
                 // arm going up
                 -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
-                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                    arm.power = -gp2.current.right_stick_y * 1.0
                 }
 
                 // arm going down
                 -gp2.current.right_stick_y < 0 && !currSwitch -> {
                     bucket.position = 0.4
-                    arm.power = -gp2.current.right_stick_y * 3.0 / 4
+                    arm.power = -gp2.current.right_stick_y * 1.0
                 }
 
                 else -> { arm.power = 0.0 }
@@ -148,6 +156,7 @@ class TeleOp : BaseLinearOpMode() {
             lastSwitch = currSwitch
 
             this.telemetry.addData("arm pos", arm.currentPosition)
+            this.telemetry.addData("hooks pos", hooks.position)
 
 
             telemetry.update()
