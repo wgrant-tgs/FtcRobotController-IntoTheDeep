@@ -49,7 +49,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
 
         arm = this.hardwareMap["arm"] as DcMotorEx
         arm.direction = DcMotorSimple.Direction.REVERSE
-        arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         elevator = this.hardwareMap["elevator"] as DcMotorEx

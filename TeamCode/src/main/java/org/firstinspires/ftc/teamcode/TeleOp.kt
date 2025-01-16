@@ -9,12 +9,10 @@ import org.firstinspires.ftc.teamcode.modular.BaseLinearOpMode
 import org.firstinspires.ftc.teamcode.modular.GamepadButton
 import org.firstinspires.ftc.teamcode.modular.GamepadState
 import org.firstinspires.ftc.teamcode.modular.ToggleableState
-import org.firstinspires.ftc.teamcode.modular.right_trigger_bool
 import org.firstinspires.ftc.teamcode.modular.toggleDirection
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.sign
-import kotlin.reflect.KCallable
 
 @TeleOp(name = "TeleOp 2025")
 @Suppress("unused")
@@ -53,7 +51,7 @@ class TeleOp : BaseLinearOpMode() {
                 hooks.toggle()
             },
 
-            GamepadButton(gp2, Gamepad::right_trigger_bool) to {
+            GamepadButton(gp2, Gamepad::right_bumper) to {
                 hooks.disablePwm()
             }
         )
