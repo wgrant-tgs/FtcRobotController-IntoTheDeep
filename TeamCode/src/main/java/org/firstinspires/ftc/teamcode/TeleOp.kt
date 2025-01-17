@@ -36,7 +36,6 @@ class TeleOp : BaseLinearOpMode() {
             GamepadButton(gp2, Gamepad::dpad_down) to {
                 arm.power = 0.0
                 ratchet.engage()
-                sleep(500)
                 ratchet.enableManual()
             },
 
