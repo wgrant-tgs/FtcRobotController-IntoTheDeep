@@ -58,19 +58,19 @@ class TeleOp : BaseLinearOpMode() {
                 if (ratchet.engaged())
                     ratchet.disengage()
 
-                while (arm.currentPosition < maxArmHeight)
+                while (opModeIsActive() && arm.currentPosition < maxArmHeight)
                     arm.power = 0.33
                 arm.power = 0.0
 
                 hooks.engage()
 
-                while (arm.currentPosition > 6900)
+                while (opModeIsActive() && arm.currentPosition > 6900)
                     arm.power = -0.33
                 arm.power = 0.0
 
                 hooks.disablePwm()
 
-                while (arm.currentPosition > 3000)
+                while (opModeIsActive() && arm.currentPosition > 3000)
                     arm.power = -1.0
                 arm.power = 0.0
 
