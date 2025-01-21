@@ -52,12 +52,35 @@ class TeleOp : BaseLinearOpMode() {
 
             GamepadButton(gp2, Gamepad::right_bumper) to {
                 hooks.disablePwm()
+            },
+
+            GamepadButton(gp2, Gamepad::left_bumper) to {
+                if (ratchet.engaged())
+                    ratchet.disengage()
+
+                while (arm.currentPosition < maxArmHeight)
+                    arm.power = 0.33
+                arm.power = 0.0
+
+                hooks.engage()
+
+                while (arm.currentPosition > 6900)
+                    arm.power = -0.33
+                arm.power = 0.0
+
+                hooks.disablePwm()
+
+                while (arm.currentPosition > 3000)
+                    arm.power = -1.0
+                arm.power = 0.0
+
+                ratchet.engage()
             }
         )
 
         // TODO: try-catch this to print any errors / force stop the program?
         try {
-            this.initHardware(true)
+            this.initHardware(false)
             this.telemetry.addLine("initialization successful")
         } catch (e: Exception) {
             this.telemetry.addLine("initialization failed")
@@ -115,6 +138,7 @@ class TeleOp : BaseLinearOpMode() {
             if (currSwitch && !lastSwitch) {
                 arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                 arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+                arm.power = 0.0
                 if (!ratchet.manual()) ratchet.engage()
                 bucket.position = bucketWaiting
             }
@@ -135,7 +159,7 @@ class TeleOp : BaseLinearOpMode() {
                 }
 
                 // arm going up
-                -gp2.current.right_stick_y > 0 && arm.currentPosition < 7000 -> {
+                -gp2.current.right_stick_y > 0 && arm.currentPosition < maxArmHeight -> {
                     arm.power = -gp2.current.right_stick_y * 1.0
                 }
 
@@ -157,7 +181,9 @@ class TeleOp : BaseLinearOpMode() {
             lastSwitch = currSwitch
 
             this.telemetry.addData("arm pos", arm.currentPosition)
+            this.telemetry.addData("arm power", arm.power)
             this.telemetry.addData("hooks pos", hooks.position)
+            this.telemetry.addData("bucket pos", bucket.position)
 
 
             telemetry.update()
