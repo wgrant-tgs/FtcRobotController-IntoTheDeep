@@ -58,22 +58,19 @@ class TeleOp : BaseLinearOpMode() {
                 if (ratchet.engaged())
                     ratchet.disengage()
 
-                while (opModeIsActive() && arm.currentPosition < maxArmHeight)
-                    arm.power = 0.33
-                arm.power = 0.0
+                fun goTo(encoderValue: Int, power: Double) {
+                    while (opModeIsActive() &&
+                        if (power > 0.0) arm.currentPosition < encoderValue else arm.currentPosition > encoderValue) {
+                        arm.power = power
+                    }
+                    arm.power = 0.0
+                }
 
+                goTo(maxArmHeight, 0.33)
                 hooks.engage()
-
-                while (opModeIsActive() && arm.currentPosition > 6900)
-                    arm.power = -0.33
-                arm.power = 0.0
-
+                goTo(6900, -0.33)
                 hooks.disablePwm()
-
-                while (opModeIsActive() && arm.currentPosition > 3000)
-                    arm.power = -1.0
-                arm.power = 0.0
-
+                goTo(3000, -1.0)
                 ratchet.engage()
             }
         )
