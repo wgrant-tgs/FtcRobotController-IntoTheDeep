@@ -53,6 +53,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
         this.arm.direction = DcMotorSimple.Direction.REVERSE
         this.arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         this.arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        this.arm.power = 0.0
 
         this.elevator = this.hardwareMap["elevator"] as DcMotorEx
         this.elevator.direction = DcMotorSimple.Direction.REVERSE
