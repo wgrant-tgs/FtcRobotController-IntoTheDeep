@@ -28,6 +28,7 @@ class AutonomousTest : BaseLinearOpMode() {
     private val pivot: (Int) -> Stage = { pos -> Stage { Target(Mode.PIVOT_RB, pos, it.position) } }
     private val score = Stage {
         ratchet.disengage()
+        sleep(500)
         arm.power = 1.0
         while (arm.currentPosition < 5500 && this.opModeIsActive()) {
 //            if (arm.currentPosition > 4000) {
@@ -69,6 +70,14 @@ class AutonomousTest : BaseLinearOpMode() {
             null
         }
     }
+    private val correct = Stage {
+        Target(
+            Mode.TURN,
+            90 - it.position.getHeading(AngleUnit.DEGREES).toInt(),
+            it.position
+        )
+    }
+
     private val stages = listOf(
         // score preload
         run(-260),
@@ -79,6 +88,7 @@ class AutonomousTest : BaseLinearOpMode() {
         run(800),
         sleepStage(2000),
         endLoad,
+        correct,
         run(-800),
         turn(45),
         score,
