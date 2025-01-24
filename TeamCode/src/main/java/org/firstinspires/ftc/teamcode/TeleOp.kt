@@ -24,6 +24,30 @@ class TeleOp : BaseLinearOpMode() {
     private lateinit var gp1: GamepadState
     private lateinit var gp2: GamepadState
 
+    private fun ascend() {
+        this.allMotors.forEach {it.power = 0.0}
+        this.elevator.power = 0.0
+        this.arm.power = 0.0
+
+        if (ratchet.engaged())
+            ratchet.disengage()
+
+        fun goTo(encoderValue: Int, power: Double) {
+            while (opModeIsActive() &&
+                if (power > 0.0) arm.currentPosition < encoderValue else arm.currentPosition > encoderValue) {
+                arm.power = power
+            }
+            arm.power = 0.0
+        }
+
+        goTo(maxArmHeight, 0.33)
+        hooks.engage()
+        goTo(6900, -0.33)
+        hooks.disablePwm()
+        goTo(3000, -1.0)
+        ratchet.engage()
+    }
+
     override fun runOpMode() {
         gp1 = GamepadState(gamepad1)
         gp2 = GamepadState(this.gamepad2)
@@ -52,26 +76,6 @@ class TeleOp : BaseLinearOpMode() {
 
             GamepadButton(gp2, Gamepad::right_bumper) to {
                 hooks.disablePwm()
-            },
-
-            GamepadButton(gp2, Gamepad::left_bumper) to {
-                if (ratchet.engaged())
-                    ratchet.disengage()
-
-                fun goTo(encoderValue: Int, power: Double) {
-                    while (opModeIsActive() &&
-                        if (power > 0.0) arm.currentPosition < encoderValue else arm.currentPosition > encoderValue) {
-                        arm.power = power
-                    }
-                    arm.power = 0.0
-                }
-
-                goTo(maxArmHeight, 0.33)
-                hooks.engage()
-                goTo(6900, -0.33)
-                hooks.disablePwm()
-                goTo(3000, -1.0)
-                ratchet.engage()
             }
         )
 
@@ -104,6 +108,8 @@ class TeleOp : BaseLinearOpMode() {
             telemetry.addData("pos", data)
 
             toggleButtonMap.forEach { it.key.ifIsToggled(it.value) }
+
+            if (gp1.current.dpad_up && gp2.current.left_bumper) ascend()
 
             /* Calculates motor power in accordance with the allMotors array
                and formulas found here: https://github.com/brandon-gong/ftc-mecanum
