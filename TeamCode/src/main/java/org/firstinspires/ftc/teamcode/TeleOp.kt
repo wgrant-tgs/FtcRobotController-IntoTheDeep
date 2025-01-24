@@ -20,7 +20,7 @@ import kotlin.math.sign
 // @Disabled
 class TeleOp : BaseLinearOpMode() {
     // kotlin does not do numeric type promotion, if the 3rd arg is just "1" than T cannot be inferred
-    private val power = ToggleableState(2, false, 0.33, 0.67, 1.0)
+    private val power = ToggleableState(1, false, 0.33, 0.67)
     private lateinit var gp1: GamepadState
     private lateinit var gp2: GamepadState
 
