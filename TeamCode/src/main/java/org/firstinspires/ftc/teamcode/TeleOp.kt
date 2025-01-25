@@ -147,17 +147,13 @@ class TeleOp : BaseLinearOpMode() {
             }
 
             // going up while arm is at bottom
-            if (ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
+            if (!ratchet.waiting() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
                 if (!ratchet.manual()) ratchet.disengage()
-            }
-
-            if (!ratchet.manual() && ratchet.engaged() && (-gp2.current.right_stick_y > 0 && currSwitch || -gp2.current.right_stick_y < 0 && !currSwitch /* should never happen */)) {
-                ratchet.disengage()
             }
 
             when {
                 // block if ratchet is engaged
-                ratchet.engaged() -> {
+                ratchet.engaged() || ratchet.waiting() -> {
                     arm.power = 0.0
                 }
 
@@ -178,7 +174,8 @@ class TeleOp : BaseLinearOpMode() {
             }
 
             // elevator and spinner
-            elevator.power = gp2.current.left_stick_y.toDouble()
+            val elevatorPower = gp2.current.left_stick_y.toDouble()
+            elevator.power = if (elevatorPower > 0) elevatorPower * 0.8 else elevatorPower
             if (gp2.current.left_stick_y.sign != 0f) spinner.on(gp2.current.left_stick_y > 0) else spinner.off()
 
             lastSwitch = currSwitch
