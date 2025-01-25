@@ -60,7 +60,7 @@ abstract class BaseLinearOpMode : LinearOpMode() {
         this.elevator.direction = DcMotorSimple.Direction.REVERSE
         this.elevator.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
-        this.ratchet = ServoWrapper(this.hardwareMap.servo["ratchet"], 0.08, 0.0)
+        this.ratchet = ServoWrapper(this.hardwareMap.servo["ratchet"], 0.085, 0.0)
         if (unlatchRatchet) this.ratchet.disengage() else this.ratchet.engage()
 
         this.hooks = ServoWrapper(this.hardwareMap.servo["hooks"], 0.6, 0.08)
